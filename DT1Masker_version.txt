@@ -1,0 +1,43 @@
+# UTF-8
+
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          '040904B0',
+          [
+            StringStruct('CompanyName', 'GimliHC'),
+            StringStruct('FileDescription', 'DT1Mask Creator / Decoder for Diablo 2 Modding'),
+            StringStruct('FileVersion', '1.0.0.0'),
+            StringStruct('InternalName', 'DT1Masker'),
+            StringStruct('OriginalFilename', 'DT1Masker.exe'),
+            StringStruct('ProductName', 'DT1Masker'),
+            StringStruct('ProductVersion', '1.0'),
+            StringStruct('LegalCopyright', 'Copyright © 2026 GimliHC'),
+            StringStruct('LegalTrademarks', ''),
+            StringStruct('License', 'OCL v1.1 + SWAtt v1'),
+            StringStruct('PrivateBuild', ''),
+            StringStruct('SpecialBuild', ''),
+            StringStruct('ReleaseDate', '20.09.2026')
+          ]
+        )
+      ]
+    ),
+    VarFileInfo(
+      [
+        VarStruct('Translation', [1033, 1200])
+      ]
+    )
+  ]
+)

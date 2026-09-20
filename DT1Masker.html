@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DT1Masker</title>
+
+    <meta
+        name="description"
+        content="DT1Mask Creator / Decoder for Diablo 2 Modding"
+    >
+
+    <meta
+        name="author"
+        content="GimliHC"
+    >
+
+    <style>
+        /* =====================================================
+           Application
+           ===================================================== */
+
+        :root {
+            color-scheme: dark;
+
+            --background: #0d1117;
+            --card: #161b22;
+            --input: #0d1117;
+
+            --border: #30363d;
+            --border-hover: #4b5563;
+
+            --text: #e6edf3;
+            --text-bright: #f0f6fc;
+            --text-muted: #8b949e;
+            --text-dim: #6e7681;
+
+            --green: #20c997;
+            --green-hover: #38d9a9;
+            --green-dark: #12b886;
+
+            --blue: #58a6ff;
+
+            --button: #21262d;
+            --button-hover: #30363d;
+            --button-pressed: #3b434d;
+
+            --danger: #f85149;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background-color: var(--background);
+            color: var(--text);
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 14px;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* =====================================================
+           Main application
+           ===================================================== */
+
+        .app {
+            width: 100%;
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding: 28px 32px 24px;
+        }
+
+        /* =====================================================
+           Header
+           ===================================================== */
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .title {
+            margin: 0;
+
+            color: var(--text-bright);
+
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            margin:
+                6px
+                0
+                0;
+
+            color: var(--text-muted);
+
+            font-size: 14px;
+        }
+
+        /* =====================================================
+           Cards
+           ===================================================== */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background-color: var(--card);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 14px;
+
+            padding:
+                22px
+                24px;
+        }
+
+        .card-title {
+            margin: 0;
+
+            color: var(--text-bright);
+
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .description {
+            margin:
+                8px
+                0
+                14px;
+
+            color: var(--text-muted);
+
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           Fields
+           ===================================================== */
+
+        .field-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #c9d1d9;
+
+            font-weight: 600;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+
+            min-width: 0;
+
+            background-color: var(--input);
+            color: var(--text-bright);
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 8px;
+
+            padding:
+                11px
+                12px;
+
+            outline: none;
+
+            transition:
+                border-color 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--blue);
+
+            box-shadow:
+                0 0 0 2px
+                rgba(88, 166, 255, 0.12);
+        }
+
+        input.result {
+            color: #58d68d;
+
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           Buttons
+           ===================================================== */
+
+        .button {
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 8px;
+
+            padding:
+                10px
+                14px;
+
+            background-color: var(--button);
+            color: #c9d1d9;
+
+            font-weight: 500;
+
+            transition:
+                background-color 0.15s ease,
+                border-color 0.15s ease,
+                color 0.15s ease,
+                transform 0.05s ease;
+        }
+
+        .button:hover {
+            background-color: var(--button-hover);
+
+            color: #ffffff;
+
+            border-color:
+                var(--border-hover);
+        }
+
+        .button:active {
+            background-color:
+                var(--button-pressed);
+
+            transform: translateY(1px);
+        }
+
+        .copy-button {
+            flex: 0 0 auto;
+
+            min-width: 72px;
+        }
+
+        /* =====================================================
+           File selector
+           ===================================================== */
+
+        .selector-card {
+            margin-bottom: 20px;
+        }
+
+        .selector-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+        }
+
+        .selected-label {
+            color: var(--green);
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .controls {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-bottom: 16px;
+        }
+
+        /* =====================================================
+           File grid
+           ===================================================== */
+
+        .file-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(8, minmax(0, 1fr));
+
+            gap: 8px;
+        }
+
+        .file-button {
+            width: 100%;
+
+            min-height: 46px;
+
+            border:
+                1px solid
+                #303b4d;
+
+            border-radius: 9px;
+
+            background-color:
+                #1b2330;
+
+            color:
+                #8b949e;
+
+            font-weight: 500;
+
+            transition:
+                background-color 0.12s ease,
+                border-color 0.12s ease,
+                color 0.12s ease,
+                transform 0.05s ease;
+        }
+
+        .file-button:hover {
+            background-color:
+                #252e3d;
+
+            color:
+                #f0f6fc;
+
+            border-color:
+                #4b5563;
+        }
+
+        .file-button:active {
+            background-color:
+                #303b4d;
+
+            color:
+                #ffffff;
+
+            transform:
+                translateY(1px);
+        }
+
+        .file-button.selected {
+            background-color:
+                var(--green);
+
+            color:
+                #061a13;
+
+            border-color:
+                #38d9a9;
+
+            font-weight: 700;
+        }
+
+        .file-button.selected:hover {
+            background-color:
+                var(--green-hover);
+
+            border-color:
+                #63e6be;
+        }
+
+        .file-button.selected:active {
+            background-color:
+                var(--green-dark);
+        }
+
+        /* =====================================================
+           Status / errors
+           ===================================================== */
+
+        .error {
+            min-height: 20px;
+
+            margin-top: 12px;
+
+            color:
+                var(--danger);
+
+            font-size: 13px;
+        }
+
+        /* =====================================================
+           Footer
+           ===================================================== */
+
+        .footer {
+            color:
+                var(--text-dim);
+
+            font-size: 12px;
+
+            text-align: center;
+        }
+
+        /* =====================================================
+           Toast
+           ===================================================== */
+
+        .toast {
+            position: fixed;
+
+            left: 50%;
+            bottom: 24px;
+
+            transform:
+                translate(-50%, 20px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            background-color:
+                #21262d;
+
+            color:
+                #f0f6fc;
+
+            border:
+                1px solid
+                #30363d;
+
+            border-radius: 8px;
+
+            padding:
+                10px
+                16px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(0, 0, 0, 0.35);
+
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease;
+
+            z-index: 1000;
+        }
+
+        .toast.visible {
+            opacity: 1;
+
+            transform:
+                translate(-50%, 0);
+        }
+
+        /* =====================================================
+           Responsive layout
+           ===================================================== */
+
+        @media (max-width: 850px) {
+
+            .app {
+                padding:
+                    22px
+                    18px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .file-grid {
+                grid-template-columns:
+                    repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .app {
+                padding:
+                    18px
+                    12px;
+            }
+
+            .title {
+                font-size: 25px;
+            }
+
+            .card {
+                padding:
+                    18px;
+            }
+
+            .file-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            .copy-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         Header
+         ====================================================== -->
+
+    <header class="header">
+
+        <h1 class="title">
+            DT1Mask Creator / Decoder for Diablo 2 Modding
+        </h1>
+
+        <p class="subtitle">
+            Select DT1 files or enter a Dt1Mask value.
+            Everything updates automatically.
+        </p>
+
+    </header>
+
+
+    <!-- =====================================================
+         Conversion cards
+         ====================================================== -->
+
+    <section class="cards">
+
+        <!-- Files -> Mask -->
+
+        <div class="card">
+
+            <h2 class="card-title">
+                Files → Dt1Mask
+            </h2>
+
+            <p class="description">
+                Enter files manually or select them
+                using the buttons below.
+            </p>
+
+            <label
+                class="field-label"
+                for="filesInput"
+            >
+                Files
+            </label>
+
+            <input
+                id="filesInput"
+                type="text"
+                placeholder="Example: File 1, File 5, File 6, File 12"
+                autocomplete="off"
+                spellcheck="false"
+            >
+
+            <div style="height: 14px;"></div>
+
+            <label class="field-label">
+                Dt1Mask
+            </label>
+
+            <div class="input-row">
+
+                <input
+                    id="maskResult"
+                    class="result"
+                    type="text"
+                    readonly
+                >
+
+                <button
+                    id="copyMaskButton"
+                    class="button copy-button"
+                    type="button"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- Mask -> Files -->
+
+        <div class="card">
+
+            <h2 class="card-title">
+                Dt1Mask → Files
+            </h2>
+
+            <p class="description">
+                Enter a Dt1Mask to highlight the
+                corresponding DT1 files.
+            </p>
+
+            <label
+                class="field-label"
+                for="maskInput"
+            >
+                Dt1Mask
+            </label>
+
+            <input
+                id="maskInput"
+                type="text"
+                placeholder="Enter a Dt1Mask value..."
+                autocomplete="off"
+                spellcheck="false"
+                inputmode="numeric"
+            >
+
+            <div style="height: 14px;"></div>
+
+            <label class="field-label">
+                Files
+            </label>
+
+            <div class="input-row">
+
+                <input
+                    id="filesResult"
+                    class="result"
+                    type="text"
+                    readonly
+                >
+
+                <button
+                    id="copyFilesButton"
+                    class="button copy-button"
+                    type="button"
+                >
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         File selector
+         ====================================================== -->
+
+    <section class="card selector-card">
+
+        <div class="selector-header">
+
+            <h2 class="card-title">
+                DT1 File Selector
+            </h2>
+
+            <div
+                id="selectedLabel"
+                class="selected-label"
+            >
+                0 / 32 selected
+            </div>
+
+        </div>
+
+        <p class="description">
+            Click a file to activate or deactivate it.
+            Active files are highlighted in green.
+        </p>
+
+
+        <!-- Controls -->
+
+        <div class="controls">
+
+            <button
+                id="selectAllButton"
+                class="button"
+                type="button"
+            >
+                Select All
+            </button>
+
+            <button
+                id="clearAllButton"
+                class="button"
+                type="button"
+            >
+                Clear All
+            </button>
+
+            <button
+                id="invertButton"
+                class="button"
+                type="button"
+            >
+                Invert Selection
+            </button>
+
+        </div>
+
+
+        <!-- File buttons -->
+
+        <div
+            id="fileGrid"
+            class="file-grid"
+        ></div>
+
+        <div
+            id="errorMessage"
+            class="error"
+            role="alert"
+            aria-live="polite"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         Footer
+         ====================================================== -->
+
+    <footer class="footer">
+
+        DT1Masker v1.0
+        &nbsp;•&nbsp;
+        Copyright © 2026 GimliHC
+
+    </footer>
+
+</div>
+
+
+<!-- =========================================================
+     Toast notification
+     ========================================================== -->
+
+<div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+<script>
+"use strict";
+
+/* ============================================================
+   Application Information
+   ============================================================ */
+
+const APP_NAME = "DT1Masker";
+const APP_VERSION = "1.0";
+const APP_COMPANY = "GimliHC";
+
+const APP_DESCRIPTION =
+    "DT1Mask Creator / Decoder for Diablo 2 Modding";
+
+const APP_COPYRIGHT =
+    "Copyright © 2026 GimliHC";
+
+const APP_LICENSE =
+    "OCL v1.1 + SWAtt v1";
+
+const APP_RELEASE_DATE =
+    "20.09.2026";
+
+const MAX_FILES = 32;
+const MAX_MASK = 0xFFFFFFFF;
+
+
+/* ============================================================
+   DOM elements
+   ============================================================ */
+
+const filesInput =
+    document.getElementById("filesInput");
+
+const maskResult =
+    document.getElementById("maskResult");
+
+const maskInput =
+    document.getElementById("maskInput");
+
+const filesResult =
+    document.getElementById("filesResult");
+
+const selectedLabel =
+    document.getElementById("selectedLabel");
+
+const fileGrid =
+    document.getElementById("fileGrid");
+
+const errorMessage =
+    document.getElementById("errorMessage");
+
+const toast =
+    document.getElementById("toast");
+
+
+/* ============================================================
+   Application state
+   ============================================================ */
+
+let selectedFiles = new Set();
+
+let updating = false;
+
+
+/* ============================================================
+   Dt1Mask logic
+   ============================================================ */
+
+/**
+ * Convert a list of file numbers to a Dt1Mask.
+ *
+ * File 1  = 1
+ * File 2  = 2
+ * File 3  = 4
+ * ...
+ * File 32 = 2147483648
+ *
+ * JavaScript bitwise operators are signed 32-bit, so this
+ * implementation deliberately uses multiplication instead.
+ *
+ * This means File 32 correctly produces 2147483648 instead
+ * of becoming a negative number.
+ */
+function filesToMask(files) {
+
+    let mask = 0;
+
+    for (const fileNumber of files) {
+
+        if (
+            fileNumber < 1 ||
+            fileNumber > MAX_FILES
+        ) {
+            throw new Error(
+                `File ${fileNumber} is invalid.\n\n` +
+                `Valid files are File 1 through File ${MAX_FILES}.`
+            );
+        }
+
+        mask +=
+            Math.pow(
+                2,
+                fileNumber - 1
+            );
+    }
+
+    return mask;
+}
+
+
+/**
+ * Convert a Dt1Mask to a list of active files.
+ */
+function maskToFiles(mask) {
+
+    if (
+        !Number.isInteger(mask) ||
+        mask < 0 ||
+        mask > MAX_MASK
+    ) {
+        throw new Error(
+            "Dt1Mask must be between " +
+            "0 and 4,294,967,295."
+        );
+    }
+
+    const files = [];
+
+    for (
+        let fileNumber = 1;
+        fileNumber <= MAX_FILES;
+        fileNumber++
+    ) {
+
+        const bit =
+            Math.pow(
+                2,
+                fileNumber - 1
+            );
+
+        if ((mask & 0xFFFFFFFF) !== undefined) {
+            /*
+             * We intentionally do not use JavaScript's
+             * signed bitwise operators for File 32.
+             *
+             * Instead, determine the bit using division.
+             */
+        }
+
+        if (
+            Math.floor(mask / bit) % 2 === 1
+        ) {
+            files.push(fileNumber);
+        }
+    }
+
+    return files;
+}
+
+
+/**
+ * Parse user input such as:
+ *
+ *     1,5,6,12
+ *
+ * or:
+ *
+ *     File 1, File 5, File 6, File 12
+ *
+ * or:
+ *
+ *     1 5 6 12
+ */
+function parseFiles(text) {
+
+    const matches =
+        text.match(/\d+/g);
+
+    if (!matches) {
+        return [];
+    }
+
+    const files = [
+        ...new Set(
+            matches.map(
+                number => Number(number)
+            )
+        )
+    ].sort(
+        (a, b) => a - b
+    );
+
+    for (const fileNumber of files) {
+
+        if (
+            fileNumber < 1 ||
+            fileNumber > MAX_FILES
+        ) {
+            throw new Error(
+                `File ${fileNumber} is invalid.\n\n` +
+                `Valid files are File 1 through File ${MAX_FILES}.`
+            );
+        }
+    }
+
+    return files;
+}
+
+
+/* ============================================================
+   Formatting helpers
+   ============================================================ */
+
+function formatFiles(files) {
+
+    return files
+        .map(
+            number => `File ${number}`
+        )
+        .join(", ");
+}
+
+
+/* ============================================================
+   Error handling
+   ============================================================ */
+
+function showError(message) {
+
+    errorMessage.textContent =
+        message;
+
+}
+
+
+function clearError() {
+
+    errorMessage.textContent = "";
+
+}
+
+
+/* ============================================================
+   File button creation
+   ============================================================ */
+
+function createFileButtons() {
+
+    fileGrid.innerHTML = "";
+
+    for (
+        let fileNumber = 1;
+        fileNumber <= MAX_FILES;
+        fileNumber++
+    ) {
+
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+
+        button.className =
+            "file-button";
+
+        button.textContent =
+            `File ${fileNumber}`;
+
+        button.dataset.fileNumber =
+            String(fileNumber);
+
+        button.setAttribute(
+            "aria-pressed",
+            "false"
+        );
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                if (updating) {
+                    return;
+                }
+
+                toggleFile(fileNumber);
+
+            }
+        );
+
+        fileGrid.appendChild(button);
+    }
+
+    updateFileButtons();
+}
+
+
+/* ============================================================
+   File selection
+   ============================================================ */
+
+function toggleFile(fileNumber) {
+
+    if (
+        selectedFiles.has(fileNumber)
+    ) {
+        selectedFiles.delete(
+            fileNumber
+        );
+    } else {
+        selectedFiles.add(
+            fileNumber
+        );
+    }
+
+    syncFromButtons();
+}
+
+
+/**
+ * Set selected files.
+ */
+function setSelectedFiles(files) {
+
+    selectedFiles =
+        new Set(files);
+
+    updateFileButtons();
+}
+
+
+/**
+ * Update visual state of every file button.
+ */
+function updateFileButtons() {
+
+    const buttons =
+        fileGrid.querySelectorAll(
+            ".file-button"
+        );
+
+    buttons.forEach(button => {
+
+        const fileNumber =
+            Number(
+                button.dataset.fileNumber
+            );
+
+        const selected =
+            selectedFiles.has(
+                fileNumber
+            );
+
+        button.classList.toggle(
+            "selected",
+            selected
+        );
+
+        button.setAttribute(
+            "aria-pressed",
+            selected
+                ? "true"
+                : "false"
+        );
+    });
+
+    updateSelectionCounter();
+}
+
+
+/**
+ * Update "X / 32 selected".
+ */
+function updateSelectionCounter() {
+
+    selectedLabel.textContent =
+        `${selectedFiles.size} / ${MAX_FILES} selected`;
+}
+
+
+/* ============================================================
+   Synchronize from file buttons
+   ============================================================ */
+
+function syncFromButtons() {
+
+    const files = [
+        ...selectedFiles
+    ].sort(
+        (a, b) => a - b
+    );
+
+    updating = true;
+
+    try {
+
+        if (files.length === 0) {
+
+            filesInput.value = "";
+            maskResult.value = "";
+            maskInput.value = "";
+            filesResult.value = "";
+
+            clearError();
+
+            updateFileButtons();
+
+            return;
+        }
+
+        const fileText =
+            formatFiles(files);
+
+        const mask =
+            filesToMask(files);
+
+        filesInput.value =
+            fileText;
+
+        maskResult.value =
+            String(mask);
+
+        maskInput.value =
+            String(mask);
+
+        filesResult.value =
+            fileText;
+
+        clearError();
+
+        updateFileButtons();
+
+    } finally {
+
+        updating = false;
+    }
+}
+
+
+/* ============================================================
+   Files textbox changed
+   ============================================================ */
+
+function filesTextChanged() {
+
+    if (updating) {
+        return;
+    }
+
+    const text =
+        filesInput.value.trim();
+
+    if (!text) {
+
+        clearAllFiles();
+
+        return;
+    }
+
+    try {
+
+        const files =
+            parseFiles(text);
+
+        const mask =
+            filesToMask(files);
+
+        updating = true;
+
+        try {
+
+            setSelectedFiles(files);
+
+            maskResult.value =
+                String(mask);
+
+            maskInput.value =
+                String(mask);
+
+            filesResult.value =
+                formatFiles(files);
+
+            clearError();
+
+        } finally {
+
+            updating = false;
+        }
+
+    } catch (error) {
+
+        showError(
+            error.message
+        );
+    }
+}
+
+
+/* ============================================================
+   Dt1Mask textbox changed
+   ============================================================ */
+
+function maskTextChanged() {
+
+    if (updating) {
+        return;
+    }
+
+    const text =
+        maskInput.value.trim();
+
+    if (!text) {
+
+        updating = true;
+
+        try {
+
+            setSelectedFiles([]);
+
+            filesInput.value = "";
+            maskResult.value = "";
+            filesResult.value = "";
+
+            clearError();
+
+        } finally {
+
+            updating = false;
+        }
+
+        return;
+    }
+
+    /*
+     * Only accept decimal integer input.
+     */
+    if (!/^\d+$/.test(text)) {
+        return;
+    }
+
+    try {
+
+        const mask =
+            Number(text);
+
+        if (
+            !Number.isSafeInteger(mask) ||
+            mask < 0 ||
+            mask > MAX_MASK
+        ) {
+            throw new Error(
+                "Dt1Mask must be between " +
+                "0 and 4,294,967,295."
+            );
+        }
+
+        const files =
+            maskToFiles(mask);
+
+        updating = true;
+
+        try {
+
+            setSelectedFiles(files);
+
+            if (files.length > 0) {
+
+                const fileText =
+                    formatFiles(files);
+
+                filesInput.value =
+                    fileText;
+
+                filesResult.value =
+                    fileText;
+
+                maskResult.value =
+                    String(mask);
+
+            } else {
+
+                filesInput.value = "";
+                filesResult.value = "";
+
+                maskResult.value = "0";
+            }
+
+            clearError();
+
+        } finally {
+
+            updating = false;
+        }
+
+    } catch (error) {
+
+        showError(
+            error.message
+        );
+    }
+}
+
+
+/* ============================================================
+   Select all
+   ============================================================ */
+
+function selectAllFiles() {
+
+    const files = [];
+
+    for (
+        let fileNumber = 1;
+        fileNumber <= MAX_FILES;
+        fileNumber++
+    ) {
+        files.push(fileNumber);
+    }
+
+    setSelectedFiles(files);
+
+    syncFromButtons();
+}
+
+
+/* ============================================================
+   Clear all
+   ============================================================ */
+
+function clearAllFiles() {
+
+    updating = true;
+
+    try {
+
+        setSelectedFiles([]);
+
+        filesInput.value = "";
+        maskResult.value = "";
+        maskInput.value = "";
+        filesResult.value = "";
+
+        clearError();
+
+    } finally {
+
+        updating = false;
+    }
+}
+
+
+/* ============================================================
+   Invert selection
+   ============================================================ */
+
+function invertSelection() {
+
+    const inverted =
+        [];
+
+    for (
+        let fileNumber = 1;
+        fileNumber <= MAX_FILES;
+        fileNumber++
+    ) {
+
+        if (
+            !selectedFiles.has(
+                fileNumber
+            )
+        ) {
+            inverted.push(fileNumber);
+        }
+    }
+
+    setSelectedFiles(inverted);
+
+    syncFromButtons();
+}
+
+
+/* ============================================================
+   Clipboard
+   ============================================================ */
+
+async function copyText(text) {
+
+    if (!text) {
+        return;
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        showToast(
+            "Copied to clipboard"
+        );
+
+    } catch (error) {
+
+        /*
+         * Fallback for browsers/environments where the
+         * Clipboard API is unavailable.
+         */
+        const temporary =
+            document.createElement("textarea");
+
+        temporary.value = text;
+
+        temporary.style.position =
+            "fixed";
+
+        temporary.style.opacity =
+            "0";
+
+        document.body.appendChild(
+            temporary
+        );
+
+        temporary.select();
+
+        try {
+            document.execCommand(
+                "copy"
+            );
+
+            showToast(
+                "Copied to clipboard"
+            );
+
+        } catch {
+
+            showToast(
+                "Unable to copy automatically"
+            );
+        }
+
+        temporary.remove();
+    }
+}
+
+
+/* ============================================================
+   Toast
+   ============================================================ */
+
+let toastTimer = null;
+
+
+function showToast(message) {
+
+    toast.textContent =
+        message;
+
+    toast.classList.add(
+        "visible"
+    );
+
+    clearTimeout(
+        toastTimer
+    );
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "visible"
+                );
+
+            },
+            1800
+        );
+}
+
+
+/* ============================================================
+   Event listeners
+   ============================================================ */
+
+filesInput.addEventListener(
+    "change",
+    filesTextChanged
+);
+
+filesInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+            filesTextChanged();
+            filesInput.blur();
+        }
+    }
+);
+
+
+maskInput.addEventListener(
+    "input",
+    maskTextChanged
+);
+
+
+document
+    .getElementById("selectAllButton")
+    .addEventListener(
+        "click",
+        selectAllFiles
+    );
+
+
+document
+    .getElementById("clearAllButton")
+    .addEventListener(
+        "click",
+        clearAllFiles
+    );
+
+
+document
+    .getElementById("invertButton")
+    .addEventListener(
+        "click",
+        invertSelection
+    );
+
+
+document
+    .getElementById("copyMaskButton")
+    .addEventListener(
+        "click",
+        () => {
+            copyText(
+                maskResult.value
+            );
+        }
+    );
+
+
+document
+    .getElementById("copyFilesButton")
+    .addEventListener(
+        "click",
+        () => {
+            copyText(
+                filesResult.value
+            );
+        }
+    );
+
+
+/* ============================================================
+   Initialize application
+   ============================================================ */
+
+createFileButtons();
+updateSelectionCounter();
+
+</script>
+
+</body>
+</html>
