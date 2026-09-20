@@ -8,7 +8,7 @@
 
 DT1Masker converts between a list of DT1 files and the single `Dt1Mask` number used by Diablo 2 modding tools. Pick the files you want and get the mask, or paste a mask and see which files it stands for. Everything updates live as you type or click.
 
-![DT1Masker screenshot](screenshot.png)
+<img src="screenshot.png" alt="DT1Masker screenshot" width="700">
 
 
 ## Features
