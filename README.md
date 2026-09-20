@@ -56,7 +56,7 @@ Valid masks range from `0` (no files) to `4,294,967,295` (all 32 files). The mas
 
 - **Locally:** download it and open it in any modern browser.
 - **Online:** if the repository has GitHub Pages enabled, it is available at  
-  `https://D2R-Gimli.github.io/DT1Masker/DT1Masker.html`
+  https://d2r-gimli.github.io/DT1Masker/DT1Masker.html
 
 ### Option 2: Desktop app (Python)
 
